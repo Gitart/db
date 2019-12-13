@@ -79,3 +79,31 @@ VALUES
     ) ;
 END;
 ```
+
+
+## Чтобы включить CORS для всего API, вам необходимо обработать запрос перед полетом.
+```golang
+import (
+  "log"
+  "net/http"
+  "github.com/gorilla/mux"
+)
+
+func main() {
+  router := mux.NewRouter()
+
+  // Handle all preflight request for CORS
+  router.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+    w.WriteHeader(http.StatusNoContent)
+    return
+  })
+
+  // Your route handlers goes right here
+  router.HandleFunc("/page", page.Search).Methods("GET")
+
+  log.Fatal(http.ListenAndServe(":3000", router))
+}
+```
