@@ -42,3 +42,40 @@ BEGIN
       INSERT INTO logs (title, datetime) VALUES(NEW.link, OLD.link);
 END
 ```
+
+
+
+
+
+## Samples
+
+```sql
+
+CREATE TRIGGER log_contact_after_update 
+   AFTER UPDATE ON leads
+   WHEN old.phone <> new.phone
+        OR old.email <> new.email
+BEGIN
+    INSERT INTO lead_logs (
+        old_id,
+        new_id,
+        old_phone,
+        new_phone,
+        old_email,
+        new_email,
+        user_action,
+        created_at
+    )
+VALUES
+    (
+        old.id,
+        new.id,
+        old.phone,
+        new.phone,
+        old.email,
+        new.email,
+        'UPDATE',
+        DATETIME('NOW')
+    ) ;
+END;
+```
